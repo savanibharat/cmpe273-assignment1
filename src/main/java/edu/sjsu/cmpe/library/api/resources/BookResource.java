@@ -74,10 +74,10 @@ public class BookResource {
 			bookdto.addLink(new LinkDto("delete-book", location
 					+ getBook.getIsbn(), "DELETE"));
 			bookdto.addLink(new LinkDto("create-review", location
-					+ getBook.getIsbn(), "POST"));
+					+ getBook.getIsbn() + "/reviews", "POST"));
 			if (getBook.getReviews().size() > 0) {
 				bookdto.addLink(new LinkDto("view-all-reviews", location
-						+ getBook.getIsbn(), "GET"));
+						+ getBook.getIsbn() + "/reviews", "GET"));
 			}
 			// build is used to convert oour return type from ResponseBuilder to
 			// Response
@@ -176,37 +176,26 @@ public class BookResource {
 
 		if (hashMapBooks.containsKey(isbn.get())) {
 			System.out.println(status.get());
-			if (status.get().equals("Available") || status.get().equals("Lost")
-					|| status.get().equals("Checkedout")
-					|| status.get().equals("Inqueue")
-					|| status.get().equals("available")
-					|| status.get().equals("lost")
-					|| status.get().equals("checkedout")
-					|| status.get().equals("inqueue")) {
-				//System.out.println(status.get());
-				Book book = hashMapBooks.get(isbn.get());
-				book.setStatus(status.get());
-				hashMapBooks.put(isbn.get(), book);
-				LinksDto links = new LinksDto();
-				links.addLink(new LinkDto("view-book", location
-						+ book.getIsbn(), "GET"));
-				links.addLink(new LinkDto("update-book", location
-						+ book.getIsbn(), "PUT"));
-				links.addLink(new LinkDto("delete-book", location
-						+ book.getIsbn(), "DELETE"));
-				links.addLink(new LinkDto("create-review", location
-						+ book.getIsbn() + "/reviews", "POST"));
-				if (book.getReviews().size() > 0) {
-					links.addLink(new LinkDto("view-all-reviews", location
-							+ book.getIsbn(), "GET"));
-				}
+			Book book = hashMapBooks.get(isbn.get());
+			book.setStatus(status.get());
+			hashMapBooks.put(isbn.get(), book);
+			LinksDto links = new LinksDto();
+			links.addLink(new LinkDto("view-book", location + book.getIsbn(),
+					"GET"));
+			links.addLink(new LinkDto("update-book", location + book.getIsbn(),
+					"PUT"));
+			links.addLink(new LinkDto("delete-book", location + book.getIsbn(),
+					"DELETE"));
+			links.addLink(new LinkDto("create-review", location
+					+ book.getIsbn() + "/reviews", "POST"));
+
+			if (book.getReviews().size() > 0) {
+				links.addLink(new LinkDto("view-all-reviews", location
+						+ book.getIsbn()+"/reviews", "GET"));
 				return Response.status(200).entity(links).build();
-			} else {
-				return Response
-						.status(Status.BAD_REQUEST)
-						.entity("Status accepted are Available,Lost,Checkedout,Inqueue,available,lost,checkedout,inqueue")
-						.build();
-			}
+			} else
+				return Response.status(200).entity(links).build();
+
 		} else {
 			return Response
 					.status(Response.Status.BAD_REQUEST)
@@ -323,9 +312,9 @@ public class BookResource {
 						.build();
 			} else {
 				AuthorDto authorDto = new AuthorDto(author);
-				String location = "/books/" + isbn.get() + "/reviews/"
+				String location = "/books/" + isbn.get() + "/authors/"
 						+ author.getId();
-				authorDto.addLink(new LinkDto("view-review", location, "GET"));
+				authorDto.addLink(new LinkDto("view-author", location, "GET"));
 				return Response.status(200).entity(authorDto).build();
 			}
 
